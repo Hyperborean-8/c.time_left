@@ -1,4 +1,4 @@
-# c.time_left
+# c.time_left (WIP)
 
 A CLI-tool that calculates and displays the time remaining between two dates, using the ncurses library.
 
