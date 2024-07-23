@@ -13,7 +13,7 @@ SRC_FILES = $(wildcard $(SRC_DIR)/*.c) main.c
 OBJ_FILES = $(patsubst %.c, $(DIST_DIR)/%.o, $(notdir $(SRC_FILES)))
 
 # Define the target executable
-TARGET = $(DIST_DIR)/app
+TARGET = $(DIST_DIR)/time_left
 
 # Rule to build the target executable
 $(TARGET): $(OBJ_FILES)

@@ -7,7 +7,9 @@ A CLI-tool that calculates and displays the time remaining between two dates, us
 - Configuration
     - [ ] Allow it to read any file
     - [ ] Parcing TOML file
+    - [ ] Parcing arguments
     - [ ] Standard file location
+    - [ ] Allow config file as an argument
     - [ ] Generating basic config
     - [ ] Adding new countdowns through the TUI
 - Rendering
