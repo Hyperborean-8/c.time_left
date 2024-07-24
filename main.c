@@ -3,7 +3,8 @@
 #include "src/config.h"
 #include "src/errors.h"
 
-Config *config;
+Config *config = NULL;
+char *config_path = NULL;
 
 void free_all();
 
@@ -14,11 +15,16 @@ int main(int argc, char *argv[])
 
   // Config
   config = malloc(sizeof(Config));
+  if (config == NULL) {
+    fprintf(stderr, "Memory allocation failed\n");
+    return 1;
+  }
 
   ErrorCode result = get_config(config);
 
   if (result != SUCCESS){
     printf("Error occured, closing the application...\n");
+    printf("Error code: %d", result);
     free_all();
     return 1;
   }

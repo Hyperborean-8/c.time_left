@@ -1,6 +1,10 @@
 #ifndef TOML_PARSER_H_
 #define TOML_PARSER_H_
 
+#include "errors.h"
+#include <stdio.h>
+#include <stdbool.h>
+
 // Виды токенов
 typedef enum {
   TOKEN_TABLE_START,
@@ -23,7 +27,7 @@ typedef union {
   char* string_value;
   int int_value;
   double float_value;
-  int bool_value; 
+  bool bool_value; 
 } TokenValue;
 
 // Токен
@@ -32,6 +36,38 @@ typedef struct {
   TokenValue value;
 } Token;
 
-void parse_toml(const char *toml_path);
+// Тип значения узла
+typedef enum {
+    TYPE_STRING,
+    TYPE_INTEGER,
+    TYPE_FLOAT,
+    TYPE_BOOLEAN,
+    TYPE_ARRAY,
+    TYPE_TABLE
+} ValueType;
+
+// Узел древа
+typedef struct Node {
+    char* key;
+    ValueType type;
+    union {
+        char* string_value;
+        int int_value;
+        double float_value;
+        int bool_value;
+        /*struct Node** array_value;*/
+        /*struct Node** table_value;*/
+    } value;
+    int children_count;
+    struct Node* parent;
+    struct Node** children;
+} Node;
+
+typedef struct {
+  ErrorCode error_code;
+  
+} ParceResult;
+
+void parse_toml_file(const FILE *toml_file);
 
 #endif // TOML_PARSER_H_

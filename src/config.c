@@ -1,12 +1,13 @@
 #include "config.h"
 #include "errors.h"
+#include "toml_parser.h"
 #include <stdlib.h>
 #include <string.h>  
 #include <stdio.h>
 
-Config create_new_config();
-
-char file_path[] = "~/Projects/c.time_left/example.toml"; // TODO: Потом поменять по понятным причинам
+// TODO: Потом поменять по понятным причинам
+// ~/ не работает, нужно вручную получать ENV переменную HOME
+char file_path[] = "/home/hyperborean-8/Projects/c.time_left/example.toml"; 
 
 ErrorCode get_config(Config *config){
 
@@ -18,8 +19,8 @@ ErrorCode get_config(Config *config){
     result = FILE_OPEN_ERROR;
     return result;
   };
-  
-  
+
+  parse_toml_file(file);
 
   // Попытаться закрыть файл
   if (fclose(file) != 0) {
