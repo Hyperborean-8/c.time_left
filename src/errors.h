@@ -1,7 +1,10 @@
 #ifndef ERRORS_H_
 #define ERRORS_H_
 
-#define FILE_OPEN_ERROR 1
-#define FILE_CLOSE_ERROR 2
+typedef enum {
+    SUCCESS = 0,
+    FILE_OPEN_ERROR = 1,
+    FILE_CLOSE_ERROR = 2
+} ErrorCode;
 
 #endif // ERRORS_H_
