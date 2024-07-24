@@ -34,6 +34,7 @@ typedef union {
 typedef struct {
   TokenType type;
   TokenValue value;
+  bool has_value;
 } Token;
 
 // Тип значения узла
@@ -68,6 +69,6 @@ typedef struct {
   
 } ParceResult;
 
-void parse_toml_file(const FILE *toml_file);
+void parse_toml_file(FILE *toml_file);
 
 #endif // TOML_PARSER_H_
