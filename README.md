@@ -5,7 +5,7 @@ A CLI-tool that calculates and displays the time remaining between two dates, us
 # Project progress
 
 - Configuration
-    - [ ] Allow it to read any file
+    - [x] Allow it to read any file
     - [ ] Parcing TOML file
     - [ ] Parcing arguments
     - [ ] Standard file location
