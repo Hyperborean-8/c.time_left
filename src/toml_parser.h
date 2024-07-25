@@ -69,7 +69,7 @@ typedef struct {
   
 } ParceResult;
 
-// Используется для ещё не 
+// Используется для ещё не созданных строк 
 typedef struct {
   char *data;
   size_t length;

@@ -20,35 +20,41 @@ ErrorCode tokenize_toml_file(FILE *toml_file){
   int ch;
 
   while ((ch = fgetc(toml_file)) != EOF) {
-    /*putchar(ch);*/
-    printf("CHARACTER: %c\n", ch);
+    printf("\n");
+    printf("CHARACTER: %c (ASCII: %d)\n", ch, ch);
 
 
     if (isalpha(ch)) {
-      // TODO: Feels awkward, maybe refactor later
-      // Never fucking mind, it doesn't work anyway because of fgetch()
-      // This is fucked, I give up for today
-      DynamicString new_dynamic_string = {NULL,0,1};
-      char *str;
-      str = (char *)malloc(sizeof(char) * (new_dynamic_string.length + 1));
-      new_dynamic_string.data = str;
-
-      while ((ch = isalpha(ch))){
+      DynamicString new_dynamic_string = {NULL, 0, 2};
+      new_dynamic_string.data = (char *)malloc(sizeof(char) * (new_dynamic_string.capacity)); 
+      if (new_dynamic_string.data == NULL){
+        perror("Cannot allocate memory for dynamic string");
+        return MEMORY_ALLOCATION_ERROR;
+      }; 
+      new_dynamic_string.data[0] = ch;
+      new_dynamic_string.length++;
+      ch = fgetc(toml_file);
+      
+      while (isalpha(ch)){
         new_dynamic_string.capacity++;
         new_dynamic_string.data = realloc(new_dynamic_string.data, sizeof(char[new_dynamic_string.capacity]));
+        if (new_dynamic_string.data == NULL){
+          perror("Cannot allocate memory for dynamic string");
+          return MEMORY_ALLOCATION_ERROR; 
+        };
         new_dynamic_string.data[new_dynamic_string.length] = ch;
-        new_dynamic_string.length++;        
-
-        printf("ADDED SYMBOL %c\n", ch);
+        new_dynamic_string.length++;
         ch = fgetc(toml_file);
       }
+         
+      printf("STARTED PRINTING STRING\n");
+      for (size_t i = 0; i < new_dynamic_string.length; i++){
+      printf("%c", new_dynamic_string.data[i]);
+      }
+      printf("\n");
 
       Token new_token = {TOKEN_KEY, {.string_value = new_dynamic_string.data}, true};
       add_token(new_token);
-
-      printf("WHOLE STRING IS %s\n", new_dynamic_string.data);
-
-      free(str);
 
     } else if (isdigit(ch)) {
 
@@ -66,10 +72,16 @@ ErrorCode tokenize_toml_file(FILE *toml_file){
       add_token(new_token);
     };
   };
-
+  
+  printf("\nFINAL\n");
   // DEBUG
   for (size_t i = 0; i < token_count; i++) {
-    printf("%d ", tokens[i].type);  }
+    printf("%d", tokens[i].type);
+    if ((tokens[i].has_value == true) && (tokens[i].type == TOKEN_KEY)){
+      printf("|%s", tokens[i].value.string_value);
+    };
+    printf(" ");
+  }
   printf("\n");
   printf("Token array size is %zu\n", token_count);
 
