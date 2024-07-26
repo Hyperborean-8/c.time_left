@@ -69,13 +69,6 @@ typedef struct {
   
 } ParceResult;
 
-// Используется для ещё не созданных строк 
-typedef struct {
-  char *data;
-  size_t length;
-  size_t capacity;
-} DynamicString;
-
 void parse_toml_file(FILE *toml_file);
 
 #endif // TOML_PARSER_H_

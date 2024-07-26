@@ -18,80 +18,129 @@ void parse_toml_file(FILE *toml_file){;
 ErrorCode tokenize_toml_file(FILE *toml_file){
   
   int ch;
+  bool string_generation;
+
+  // For new strings
+  char *str;
+  size_t str_length;
+  size_t str_capacity;
 
   while ((ch = fgetc(toml_file)) != EOF) {
     printf("\n");
     printf("CHARACTER: %c (ASCII: %d)\n", ch, ch);
 
     // TODO: Rewrite this again
-
     if (isalpha(ch)) {
-      DynamicString new_dynamic_string = {NULL, 0, 2};
-      new_dynamic_string.data = (char *)malloc(sizeof(char) * (new_dynamic_string.capacity)); 
-      if (new_dynamic_string.data == NULL){
-        perror("Cannot allocate memory for dynamic string");
-        return MEMORY_ALLOCATION_ERROR;
-      }; 
-      new_dynamic_string.data[0] = ch;
-      new_dynamic_string.length++;
-      ch = fgetc(toml_file);
       
-      while (isalpha(ch)){
-        new_dynamic_string.capacity++;
-        new_dynamic_string.data = realloc(new_dynamic_string.data, sizeof(char[new_dynamic_string.capacity]));
-        if (new_dynamic_string.data == NULL){
-          perror("Cannot allocate memory for dynamic string");
-          return MEMORY_ALLOCATION_ERROR; 
+      // Create new dynamic string 
+      if (!string_generation){
+        
+        printf("New string created!");
+        str_length = 0;
+        str_capacity = 2;
+        str = (char *)malloc(sizeof(char) * str_capacity);
+        str[str_length] = ch; 
+        str_length++;
+        string_generation = true;
+
+        // Continue the current dynamic string
+        } else {
+           
+          printf("Continue old strong with %c", ch);
+          str_capacity++;
+          str = realloc(str, sizeof(char[str_capacity]));
+          if (str == NULL){
+            perror("Cannot allocate memory for a string");
+            return MEMORY_ALLOCATION_ERROR; 
+          };
+          str[str_length] = ch;
+          str_length++;
         };
-        new_dynamic_string.data[new_dynamic_string.length] = ch;
-        new_dynamic_string.length++;
-        ch = fgetc(toml_file);
-      }
-         
-      printf("STARTED PRINTING STRING\n");
-      for (size_t i = 0; i < new_dynamic_string.length; i++){
-      printf("%c", new_dynamic_string.data[i]);
-      }
-      printf("\n");
+      } 
 
-      Token new_token = {TOKEN_KEY, {.string_value = new_dynamic_string.data}, true};
-      add_token(new_token);
-    
-    } else if (ch == '"'){
-      DynamicString new_dynamic_string = {NULL, 0, 2};
-      new_dynamic_string.data = (char *)malloc(sizeof(char) * (new_dynamic_string.capacity)); 
-      if (new_dynamic_string.data == NULL){
-        perror("Cannot allocate memory for dynamic string");
-        return MEMORY_ALLOCATION_ERROR;
-      };
-      ch = fgetc(toml_file);
-      new_dynamic_string.data[0] = ch;
-      new_dynamic_string.length++;
-      ch = fgetc(toml_file);
-      
-      while (ch != '"'){
-        new_dynamic_string.capacity++;
-        new_dynamic_string.data = realloc(new_dynamic_string.data, sizeof(char[new_dynamic_string.capacity]));
-        if (new_dynamic_string.data == NULL){
-          perror("Cannot allocate memory for dynamic string");
-          return MEMORY_ALLOCATION_ERROR; 
-        };
-        new_dynamic_string.data[new_dynamic_string.length] = ch;
-        new_dynamic_string.length++;
-        ch = fgetc(toml_file);
-      }
-      fgetc(toml_file);
-         
-      printf("STARTED PRINTING STRING\n");
-      for (size_t i = 0; i < new_dynamic_string.length; i++){
-      printf("%c", new_dynamic_string.data[i]);
-      }
-      printf("\n");
+    // Check if it's a ongoing string
+    if (string_generation) { 
 
-      Token new_token = {TOKEN_STRING, {.string_value = new_dynamic_string.data}, true};
-      add_token(new_token);
+        printf("STARTED PRINTING STRING\n");
+        for (size_t i = 0; i < str_length; i++){
+          printf("%c", str[i]);
+        }
+        printf("\n");
 
-    } else if (isdigit(ch)) {
+        Token new_token = {TOKEN_KEY, {.string_value = str}, true};
+        add_token(new_token);
+        string_generation = false;
+
+    }
+
+
+      /*if (isalpha(ch)) {*/
+    /*  DynamicString new_dynamic_string = {NULL, 0, 2};*/
+    /*  new_dynamic_string.data = (char *)malloc(sizeof(char) * (new_dynamic_string.capacity)); */
+    /*  if (new_dynamic_string.data == NULL){*/
+    /*    perror("Cannot allocate memory for dynamic string");*/
+    /*    return MEMORY_ALLOCATION_ERROR;*/
+    /*  }; */
+    /*  new_dynamic_string.data[0] = ch;*/
+    /*  new_dynamic_string.length++;*/
+    /*  ch = fgetc(toml_file);*/
+    /**/
+    /*  while (isalpha(ch)){*/
+    /*    new_dynamic_string.capacity++;*/
+    /*    new_dynamic_string.data = realloc(new_dynamic_string.data, sizeof(char[new_dynamic_string.capacity]));*/
+    /*    if (new_dynamic_string.data == NULL){*/
+    /*      perror("Cannot allocate memory for dynamic string");*/
+    /*      return MEMORY_ALLOCATION_ERROR; */
+    /*    };*/
+    /*    new_dynamic_string.data[new_dynamic_string.length] = ch;*/
+    /*    new_dynamic_string.length++;*/
+    /*    ch = fgetc(toml_file);*/
+    /*  }*/
+    /**/
+    /*  printf("STARTED PRINTING STRING\n");*/
+    /*  for (size_t i = 0; i < new_dynamic_string.length; i++){*/
+    /*  printf("%c", new_dynamic_string.data[i]);*/
+    /*  }*/
+    /*  printf("\n");*/
+    /**/
+    /*  Token new_token = {TOKEN_KEY, {.string_value = new_dynamic_string.data}, true};*/
+    /*  add_token(new_token);*/
+    /**/
+    /*} else if (ch == '"'){*/
+    /*  DynamicString new_dynamic_string = {NULL, 0, 2};*/
+    /*  new_dynamic_string.data = (char *)malloc(sizeof(char) * (new_dynamic_string.capacity)); */
+    /*  if (new_dynamic_string.data == NULL){*/
+    /*    perror("Cannot allocate memory for dynamic string");*/
+    /*    return MEMORY_ALLOCATION_ERROR;*/
+    /*  };*/
+    /*  ch = fgetc(toml_file);*/
+    /*  new_dynamic_string.data[0] = ch;*/
+    /*  new_dynamic_string.length++;*/
+    /*  ch = fgetc(toml_file);*/
+    /**/
+    /*  while (ch != '"'){*/
+    /*    new_dynamic_string.capacity++;*/
+    /*    new_dynamic_string.data = realloc(new_dynamic_string.data, sizeof(char[new_dynamic_string.capacity]));*/
+    /*    if (new_dynamic_string.data == NULL){*/
+    /*      perror("Cannot allocate memory for dynamic string");*/
+    /*      return MEMORY_ALLOCATION_ERROR; */
+    /*    };*/
+    /*    new_dynamic_string.data[new_dynamic_string.length] = ch;*/
+    /*    new_dynamic_string.length++;*/
+    /*    ch = fgetc(toml_file);*/
+    /*  }*/
+    /*  fgetc(toml_file);*/
+    /**/
+    /*  printf("STARTED PRINTING STRING\n");*/
+    /*  for (size_t i = 0; i < new_dynamic_string.length; i++){*/
+    /*  printf("%c", new_dynamic_string.data[i]);*/
+    /*  }*/
+    /*  printf("\n");*/
+    /**/
+    /*  Token new_token = {TOKEN_STRING, {.string_value = new_dynamic_string.data}, true};*/
+    /*  add_token(new_token);*/
+
+    if (isdigit(ch)) {
 
     } else if (ch == '[') {
       Token new_token = {TOKEN_TABLE_START, {.string_value = NULL}, false};
