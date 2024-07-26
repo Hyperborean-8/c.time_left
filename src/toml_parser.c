@@ -23,6 +23,7 @@ ErrorCode tokenize_toml_file(FILE *toml_file){
     printf("\n");
     printf("CHARACTER: %c (ASCII: %d)\n", ch, ch);
 
+    // TODO: Rewrite this again
 
     if (isalpha(ch)) {
       DynamicString new_dynamic_string = {NULL, 0, 2};
@@ -55,6 +56,40 @@ ErrorCode tokenize_toml_file(FILE *toml_file){
 
       Token new_token = {TOKEN_KEY, {.string_value = new_dynamic_string.data}, true};
       add_token(new_token);
+    
+    } else if (ch == '"'){
+      DynamicString new_dynamic_string = {NULL, 0, 2};
+      new_dynamic_string.data = (char *)malloc(sizeof(char) * (new_dynamic_string.capacity)); 
+      if (new_dynamic_string.data == NULL){
+        perror("Cannot allocate memory for dynamic string");
+        return MEMORY_ALLOCATION_ERROR;
+      };
+      ch = fgetc(toml_file);
+      new_dynamic_string.data[0] = ch;
+      new_dynamic_string.length++;
+      ch = fgetc(toml_file);
+      
+      while (ch != '"'){
+        new_dynamic_string.capacity++;
+        new_dynamic_string.data = realloc(new_dynamic_string.data, sizeof(char[new_dynamic_string.capacity]));
+        if (new_dynamic_string.data == NULL){
+          perror("Cannot allocate memory for dynamic string");
+          return MEMORY_ALLOCATION_ERROR; 
+        };
+        new_dynamic_string.data[new_dynamic_string.length] = ch;
+        new_dynamic_string.length++;
+        ch = fgetc(toml_file);
+      }
+      fgetc(toml_file);
+         
+      printf("STARTED PRINTING STRING\n");
+      for (size_t i = 0; i < new_dynamic_string.length; i++){
+      printf("%c", new_dynamic_string.data[i]);
+      }
+      printf("\n");
+
+      Token new_token = {TOKEN_STRING, {.string_value = new_dynamic_string.data}, true};
+      add_token(new_token);
 
     } else if (isdigit(ch)) {
 
@@ -78,6 +113,8 @@ ErrorCode tokenize_toml_file(FILE *toml_file){
   for (size_t i = 0; i < token_count; i++) {
     printf("%d", tokens[i].type);
     if ((tokens[i].has_value == true) && (tokens[i].type == TOKEN_KEY)){
+      printf("|%s", tokens[i].value.string_value);
+    } else if ((tokens[i].has_value == true) && (tokens[i].type == TOKEN_STRING)){
       printf("|%s", tokens[i].value.string_value);
     };
     printf(" ");
