@@ -24,10 +24,10 @@ typedef enum {
 
 // Виды значений токенов
 typedef union {
-  char* string_value;
-  int int_value;
-  double float_value;
-  bool bool_value; 
+  char *string_value;
+  int *int_value;
+  double *float_value;
+  bool *bool_value; 
 } TokenValue;
 
 // Токен
